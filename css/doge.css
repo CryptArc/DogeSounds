@@ -1,0 +1,95 @@
+body {
+  color: #ccc;
+  font-family: "Comic Sans MS";
+  font-size: 1.25em; 
+  line-height: 1.5em;
+  margin:0px;
+  background-repeat: no-repeat;
+  background-color:#0a0a04;
+  background-size: 50%;
+  width: 100%;
+  height: 100%;
+}
+a {
+  color: #ccc
+}
+#content {
+  height: 100%;
+  width: 100%;
+}
+
+.play, .pause, .fullscreen, .hideControls,.volUp, .volDown, .vol,.showAbout {
+  width: 2em;
+  text-align: center;
+  margin-right: 1em;
+  float: left;
+  cursor:pointer;
+}
+.close {
+  float:right;
+  cursor:pointer;
+}
+
+.close:hover{
+  color:#ffc;
+}
+.vu {
+  background-color: #999;
+  height:12px;
+  bottom: 0px;
+  padding: 0px;
+  margin-top:8px;
+  width:15px;
+}
+
+.toggleControl:hover {
+  color:#fff;
+  cursor:pointer;
+}
+
+.active {
+  background-color: #339999;
+}
+
+.stats {
+  font-size: 2em;
+  position:absolute;
+} 
+#wow {
+  font-size: 4em;
+  font-weight: bold;
+  color: #ffc;
+  position: absolute;
+  margin-left: 25%;
+  margin-top:20%;
+}
+#footer {
+  position:fixed;
+  bottom: 0%;
+  font-size: 0.8em;
+  color:#ccc;
+  background-color: #333;
+  padding-right: 2em;
+  width: 18em;
+}
+
+#difficulty {
+  position: relative;
+  bottom:0%;
+  float:right;
+}
+#about {
+  position: absolute;
+  display:block;
+  padding: 2%;
+  font-size: 1.0em;
+  line-height: 1.4em;
+  border-radius: 1%;
+  background-color: #333;
+  color: #e0e0e0;
+  top:25%;
+  left:55%;
+  width: 35%;
+  background-color: #333;
+  z-index: 99999;
+}

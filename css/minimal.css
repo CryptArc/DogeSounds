@@ -1,0 +1,48 @@
+body {
+  background: #000; 
+  background-size: 140%;
+  background-position: 10% 120%;
+  color: #ccc;
+  font-family: "Andada"; 
+  line-height: 1.5em;
+  margin:0px;
+}
+a {
+  color: #ccc
+}
+.play, .pause, .fullscreen, .hideControls,.volUp, .volDown, .vol {
+  width: 2em;
+  text-align: center;
+  margin-right: 1em;
+  float: left;
+  cursor:pointer;
+}
+.vu {
+  background-color: #999;
+  height:12px;
+  bottom: 0px;
+  padding: 0px;
+  margin-top:8px;
+  width:15px;
+}
+
+.toggleControl:hover {
+  color:#fff;
+  cursor:pointer;
+}
+.bar {
+  width: 100%;
+  position: absolute;
+  padding: 0px;
+  height: 2px;
+  background-color: #00ff00;
+}
+.active {
+  background-color: #339999;
+}
+#footer {
+  position:fixed;
+  bottom: 0%;
+  font-size: 0.8em;
+  color:#999;
+}
