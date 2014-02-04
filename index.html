@@ -16,6 +16,7 @@
  <!-- extras -->
  <script src="./inc/Base64.js" type="text/javascript"></script>
  <script src="./inc/base64binary.js" type="text/javascript"></script>
+ <script src="./js/utils.js" type="text/javascript"></script>
  <script src="./js/dogeChain.js" type="text/javascript"></script>
  <script src="./js/miningSong.js" type="text/javascript"></script>
  
@@ -118,7 +119,7 @@ var AnimateBars= function(){
    $("#blockCount").html("Such Block Number: "+tc);
 
    $(["#totalCoins","#hashRate","#difficulty","#blockCount"]).each(function(c,e){
-       $(e).animate({"color":colorMap[(dogeChain.blockCount+ c+dogeChain.blockCountArray[c%dogeChain.blockCountArray.length])%12]},{duration:tempo*64,queue:false}
+       $(e).animate({"color":colorMap[(dogeChain.blockCount+ c+dogeChain.blockCountArray.wrapAt(c))%12]},{duration:tempo*64,queue:false}
        )    
    })
   $(["#totalCoins","#hashRate","#blockCount"]).each(function(c,e){
@@ -131,8 +132,9 @@ var AnimateBars= function(){
   })
 }
 function NotesCallback(n,i){
-  var nums = $("#"+n).find("span");
-  $(nums[i%nums.length]).effect("highlight",{"color":colorMap[step%12]},tempo*4)
+  var nums = $("#"+n).find("span").toArray();
+  
+  $(nums.wrapAt(i)).effect("highlight",{"color":colorMap[step%12]},tempo*4)
 }  
 
 $(document).ready(function(){

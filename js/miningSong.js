@@ -1,4 +1,3 @@
-
 var isPlaying = true;
 var MOON = 100000000000;
 var step=0;
@@ -35,7 +34,7 @@ themes["minimal_choir"] = function(i,t,c){
     return false;
   }
   var now = new Date().getTime();
-  var smm = dogeChain.blockCountArray[(1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000))))%dogeChain.blockCountArray.length];
+  var smm = dogeChain.blockCountArray.wrapAt((1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000)))));
   sm = (7*(step % smm))%12;
   note = 12+octave+ sm +(((i *[7,5][i%2])%49)+ t);
   note2 = 12+octave+ sm+(((i *[7,5][i%2])%49)+ t + dogeChain.harmonize);
@@ -102,7 +101,7 @@ var TotalCoins = function(){
   var tc = dogeChain.totalCoinsArray;
   var tz = parseInt(tc[0]);
   var tl = tc.length;
-  tc = tc[step%tl]
+  tc = tc.wrapAt(step);
   noteTheme(parseInt(tc),24+dogeChain.moonDistance,0);
   noteTheme((Math.ceil(step/tz)%(tl*tz)),24+dogeChain.moonDistance,1);
   NotesCallback("totalCoins",parseInt(tc));
@@ -113,7 +112,7 @@ var HashRate = function(){
   var tc = dogeChain.hashRateArray;
   var tz = parseInt(tc[0]);
   var tl = tc.length;
-  tc = tc[step%tl]
+  tc = tc.wrapAt(step)
   noteTheme(parseInt(tc),24+dogeChain.moonDistance,2);
   noteTheme((Math.ceil(step/tz)%(tl*tz)),36+dogeChain.moonDistance,3);
   NotesCallback("hashRate",parseInt(tc));
@@ -125,7 +124,7 @@ var BlockCount = function(){
   var tc;
   var tl = tcc.length;
   var tx = tcc[Math.ceil(Math.log(this.difficulty))%tl]
-  tc = tcc[step%tl]
+  tc = tcc.wrapAt(step)
   noteTheme(parseInt(tc),24+dogeChain.moonDistance,4);
   NotesCallback("blockCount",parseInt(tc));
   
@@ -151,7 +150,7 @@ var NotesCallback = function(n,i){};
 var Notes = function(){
   var sh = Math.floor(step / dogeChain.blockCount);
   var bl = dogeChain.blockCountArray;
-  var bbl = bl[sh%bl.length];
+  var bbl = bl.wrapAt(sh);
   var pct = dogeChain.totalCoins/ MOON;
   if (dogeChain.blockCount != dogeChain.oldBlockCount) {
     NewBlock();
@@ -161,25 +160,25 @@ var Notes = function(){
   if (base < 2) { base =2 }
 
   var ins = Number(step).toString(base).split("");
-  if (ins[step%ins.length]=="1"){
+  if (ins.wrapAt(step)=="1"){
     TotalCoins();
   }
   var ins = Number(step%Math.pow(2,bl.length)).toString(base).split("");
-  if (ins[step%ins.length]=="1"){
+  if (ins.wrapAt(step)=="1"){
     BlockCount();
   }
 
   base = Math.floor(pct * 5);
   if (base < 2) { base =2 }
   var ins = Number(step).toString(base).split("");
-  if (ins[step%ins.length]=="1"){
+  if (ins.wrapAt(step)=="1"){
     HashRate();
   }
 
   base = Math.floor(pct * 6);
   if (base < 2) { base =2 }
   var ins = Number(step%Math.pow(2,12)).toString(base).split("");
-  if (ins[step%ins.length]=="1"){
+  if (ins.wrapAt(step)=="1"){
     noteTheme(dogeChain.hashHistory[step%32],dogeChain.moonDistance,8)
   }
 

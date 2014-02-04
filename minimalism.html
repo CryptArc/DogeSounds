@@ -16,6 +16,7 @@
  <!-- extras -->
  <script src="./inc/Base64.js" type="text/javascript"></script>
  <script src="./inc/base64binary.js" type="text/javascript"></script>
+ <script src="./js/utils.js" type="text/javascript"></script>
  <script src="./js/dogeChain.js" type="text/javascript"></script>
  <script src="./js/miningSong.js" type="text/javascript"></script>
 
@@ -72,8 +73,8 @@ var AnimateBars= function(){
 
     $($(".bar")[c]).animate({"top":Math.ceil((note/128)*$(document).height()).toString()+"px"},tempo*tl2)
     $($(".bar")[c]).animate({"backgroundColor":color},tempo*tl2) 
-    $($(".bar")[c]).animate({"opacity":(1+dogeChain.totalCoinsArray[c%dogeChain.totalCoinsArray.length])/10},tempo*tl2) 
-      $($(".bar")[c]).animate({"height":Math.ceil(2*(1+dogeChain.blockCountArray[c%dogeChain.blockCountArray.length])).toString()+"em"},tempo*tl2)    
+    $($(".bar")[c]).animate({"opacity":(1+dogeChain.totalCoinsArray.wrapAt(c))/10},tempo*tl2) 
+      $($(".bar")[c]).animate({"height":Math.ceil(2*(1+dogeChain.blockCountArray.wrapAt(c))).toString()+"em"},tempo*tl2)    
     
   })
   

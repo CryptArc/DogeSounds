@@ -25,7 +25,8 @@ dogeChain.doTotalCoins = function(){
     }
   })  
   this.totalCoins =Math.floor(_this.totalCoins);
-  this.totalCoinsArray =$(this.totalCoins.toString().split("")).map(function(i,e){return parseInt(e)});
+  this.totalCoinsArray =$(this.totalCoins.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
+  
 }
 dogeChain.doHashRate = function(){
   var url =   "api.php?request=nethash";
@@ -38,7 +39,7 @@ dogeChain.doHashRate = function(){
     }
   });
   this.hashRate = _this.hashRate;
-  this.hashRateArray =$(this.hashRate.toString().split("")).map(function(i,e){return parseInt(e)});
+  this.hashRateArray =$(this.hashRate.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
   tempo = this.difficulty*0.125;
   if (tempo < 60){
     tempo = 60
@@ -87,7 +88,7 @@ dogeChain.doBlockCount = function(){
     }
   })  
   this.blockCount = _this.blockCount;
-  this.blockCountArray = $(this.blockCount.toString().split("")).map(function(i,e){return parseInt(e)});
+  this.blockCountArray = $(this.blockCount.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
 }
 dogeChain.doDifficulty = function(){
   var url =   "api.php?request=getdifficulty";
@@ -100,8 +101,7 @@ dogeChain.doDifficulty = function(){
     }
   })  
   this.difficulty = _this.difficulty;
-  this.difficultyArray = $(this.difficulty.toString().split("")).map(function(i,e){return parseInt(e)});
-  
+  this.difficultyArray = $(this.difficulty.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
 }
 dogeChain.doTransactions = function(){
   var url =   "api.php?request=transactions";
