@@ -53,6 +53,13 @@ var noteTheme  = themes["minimal"];
 
 var Step = function(){
   step++;
+  dogeChain.updateData();
+  dogeChain.doTotalCoins();
+  dogeChain.doHashRate();
+  dogeChain.doBlockCount();
+  dogeChain.doDifficulty();
+  dogeChain.doHashHistory();
+
 }
 
 var CheckStats = function(){
@@ -60,14 +67,12 @@ var CheckStats = function(){
     loadAll();
   }
   dogeChain.startTime = new Date().getTime();
-  dogeChain.doTotalCoins();
-  dogeChain.doHashRate();
-  dogeChain.doBlockCount();
-  if (dogeChain.blockCount != dogeChain.oldBlockCount) {
-    NewBlock();
-  }
-  dogeChain.doDifficulty();
-  dogeChain.doHashHistory();
+  dogeChain.getData();
+  
+if (dogeChain.blockCount != dogeChain.oldBlockCount) {
+  NewBlock();
+}
+
   dogeChain.moonDistance = Math.round((dogeChain.hashRate / dogeChain.oldHashRate) * 12)%12
  // dogeChain.dur = parseInt(dogeChain.hashRate.toString().split("")[0])
   var insts = (729+(dogeChain.blockCount%729)).toString(3).split("");

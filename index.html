@@ -156,6 +156,7 @@ $(document).ready(function(){
     $(".vu").css({width:(10*masterVolume).toString()+"px"})
 
   });
+  window.setTimeout(function(){$("#about").fadeOut(10000)},120000)
   $(".volDown").click(function(i,e){
     masterVolume = masterVolume - 0.1;
     if (masterVolume <0.1) {
@@ -169,16 +170,10 @@ $(document).ready(function(){
   $(".close").click(function (){
     $("#about").fadeOut();
   })
-
-  dogeChain.doTotalCoins();
-  dogeChain.doHashRate();
-  dogeChain.doBlockCount();
+  dogeChain.getData();
   if (dogeChain.blockCount != dogeChain.oldBlockCount) {
     NewBlock();
   }
-  dogeChain.doDifficulty();
-  dogeChain.doHashHistory();
-
   if (dogeChain.hashRate  > dogeChain.oldHashRate) {
     dogeChain.harmonize = 7
   } else {

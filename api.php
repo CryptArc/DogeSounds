@@ -37,7 +37,6 @@ function get_data($url,$filename = null) {
   if (!file_exists("cache/".$filename)){
     file_put_contents("cache/".$filename,"{'time':1}");
   }
-
   $cache = file_get_contents("cache/".$filename);
   $cache = json_decode($cache,true);
   if (isset($cache["time"])&& ((time() - $cache["time"]) < 10)){
@@ -65,6 +64,25 @@ if (isset($_GET["request"])){
   $api_url = "http://dogechain.info/chain/Dogecoin/q/";
   $req = $_GET["request"];
   switch ($req){
+    case "refresh":
+    $data_array = array();
+    $data_array["totalbc"] = json_decode(get_data($api_url."totalbc"),true);
+    $data_array["blockcount"] = json_decode(get_data($api_url."getblockcount"),true);
+    $data_array["difficulty"] = json_decode(get_data($api_url."getdifficulty"),true);
+    $data = json_decode(get_data($api_url."nethash/1/-1/?format=json","nethash"),true);
+    $data_array["nethash"] = $data;
+    $data = get_data($api_url."nethash/1/-32?format=json","nethash_full");
+    $data = str_replace(',','","',$data);
+    $data = str_replace('[','["',$data);
+    $data = str_replace(']','"]',$data);
+    $data = str_replace('["[','[[',$data);
+    $data = str_replace(']"]',']]',$data);
+    $data = str_replace(']","[','],[',$data);
+    $data = json_decode($data,true);
+    $data_array["nethash_full"]  = $data;
+
+    $data = json_encode($data_array);
+    break;
     case "totalbc":
       $data = get_data($api_url."totalbc");
     break;
