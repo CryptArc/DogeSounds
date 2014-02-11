@@ -65,7 +65,6 @@ dogeChain.doHashHistory = function(){
       var _this = this
       $(data).each(function(i,e){
         var h = parseFloat(e[6]);
-       console.log(h);
        if (h > 10000) {
          h=1;
        }
