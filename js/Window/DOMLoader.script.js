@@ -78,12 +78,17 @@ DOMLoader.script.prototype.add = function(config) {
 	///
 	var batchTest = [];
 	var addElement = function(element) {
+    var ok = true;
 		if (typeof(element) === "string") {
 			element = {
 				src: element,
 				verify: config.verify
 			};
 		}
+    if (element.src.split("function").length>1){
+      ok = false;
+    }
+    
 		if (/([\w\d.])$/.test(element.verify)) { // check whether its a variable reference
 			element.test = element.verify;
 			if (typeof(element.test) === "object") {
@@ -108,7 +113,9 @@ DOMLoader.script.prototype.add = function(config) {
 		};
 		script.setAttribute("type", "text/javascript");
 		script.setAttribute("src", element.src);
-		doc.appendChild(script);
+    if (ok){
+      doc.appendChild(script);
+    }
 		that.loading[element.src] = function() {};
 	};
 	/// checking to see whether everything loaded properly
@@ -118,7 +125,7 @@ DOMLoader.script.prototype.add = function(config) {
 		} else {
 			for (var n = 0; n < srcs.length; n ++) {
 				testElement(srcs[n], srcs[n].test);
-			}
+			};
 		}
 		var istrue = true;
 		for (var n = 0; n < batchTest.length; n ++) {

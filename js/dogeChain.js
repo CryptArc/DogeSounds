@@ -1,3 +1,5 @@
+Array.prototype.wrapAt = function(i){var out = this[i%this.length]; return out}
+
 var dogeChain = new Object();
 dogeChain.hashRateArray = [1,2,3,4,5,6,7];
 dogeChain.lastNote = [0,1,2,3,4,5,6,7,8,9,10,11,12];
@@ -26,7 +28,6 @@ dogeChain.doTotalCoins = function(){
   })  
   this.totalCoins =Math.floor(_this.totalCoins);
   this.totalCoinsArray =$(this.totalCoins.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
-  
 }
 
 dogeChain.getData = function(){
@@ -42,7 +43,7 @@ dogeChain.getData = function(){
 }
 
 dogeChain.updateData = function(){
-  if (this.apiData.nethash.length >0){
+  if (typeof(this.apiData.nethash)=="object" &&  this.apiData.nethash.length >0){
     this.hashRate = this.apiData.nethash[0][7]
   }
   this.blockCount = this.apiData.blockcount

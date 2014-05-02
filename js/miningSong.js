@@ -13,14 +13,18 @@ themes["minimal"] = function(i,t,c){
   var note,note2,vol,sm;
   if (!isPlaying){
     return false;
-  }
+  };
   var now = new Date().getTime();
-  var smm = dogeChain.blockCountArray[(1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000))))%dogeChain.blockCountArray.length];
+  var smm =1+ dogeChain.blockCountArray[(1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000))))%dogeChain.blockCountArray.length];
   sm = (7*(step % smm))%12;
   note = 12+sm+(((i *7)%84)+ t)%104;
   note2 = 12+ sm+(((i *7)%84)+ t + dogeChain.harmonize)%104;
-  vol = 32*Math.abs((128-i)/(note+12))* MIDI.channelVolumes[c] * masterVolume;
+  vol = 32*Math.abs((128-(i%127))/(note+12));
+  vol = vol* MIDI.channelVolumes[c] * masterVolume;
+
   vol = vol * (3+dogeChain.hashRateArray[step%dogeChain.hashRateArray.length])/6;
+
+
   if (vol > 256) { vol = 256 } 
   MIDI.noteOn(c,note, vol, 0/1000);
   dogeChain.runningNote = MIDI.noteOn(c,note, vol, 0/1000);
@@ -34,7 +38,7 @@ themes["minimal_choir"] = function(i,t,c){
     return false;
   }
   var now = new Date().getTime();
-  var smm = dogeChain.blockCountArray.wrapAt((1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000)))));
+  var smm = 1+dogeChain.blockCountArray.wrapAt((1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000)))));
   sm = (7*(step % smm))%12;
   note = 12+octave+ sm +(((i *[7,5][i%2])%49)+ t);
   note2 = 12+octave+ sm+(((i *[7,5][i%2])%49)+ t + dogeChain.harmonize);
@@ -104,7 +108,7 @@ if (dogeChain.blockCount != dogeChain.oldBlockCount) {
 
 var TotalCoins = function(){
   var tc = dogeChain.totalCoinsArray;
-  var tz = parseInt(tc[0]);
+  var tz = parseInt(tc[0])+1;
   var tl = tc.length;
   tc = tc.wrapAt(step);
   noteTheme(parseInt(tc),24+dogeChain.moonDistance,0);
@@ -115,7 +119,7 @@ var TotalCoins = function(){
 
 var HashRate = function(){
   var tc = dogeChain.hashRateArray;
-  var tz = parseInt(tc[0]);
+  var tz = parseInt(tc[0])+1;
   var tl = tc.length;
   tc = tc.wrapAt(step)
   noteTheme(parseInt(tc),24+dogeChain.moonDistance,2);
@@ -125,7 +129,7 @@ var HashRate = function(){
 
 var BlockCount = function(){
   var tcc = dogeChain.blockCountArray;
-  var tz = parseInt(tcc[0]);
+  var tz = parseInt(tcc[0])+1;
   var tc;
   var tl = tcc.length;
   var tx = tcc[Math.ceil(Math.log(this.difficulty))%tl]
@@ -160,7 +164,7 @@ var Notes = function(){
   if (dogeChain.blockCount != dogeChain.oldBlockCount) {
     NewBlock();
   }
-
+  
   base = Math.floor(pct * 4);
   if (base < 2) { base =2 }
 
