@@ -14,29 +14,23 @@ dogeChain.oldBlockCount = 1234;
 dogeChain.blockCount= 1234;
 dogeChain.difficulty = 1234;
 dogeChain.oldHashTime = 100;
+dogeChain.coin = "doge"; //"uno","doge", "zet","ptr"
 dogeChain.startTime = new Date().getTime();
 dogeChain.apiData = {};
 dogeChain.doTotalCoins = function(){
-  var url =   "api.php?request=totalbc";
-  var _this = this;
-  $.ajax({
-    url:url,
-    dataType: "json",
-    success:function(data){
-      _this.totalCoins =data;
-    }
-  })  
-  this.totalCoins =Math.floor(_this.totalCoins);
   this.totalCoinsArray =$(this.totalCoins.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
 }
 
 dogeChain.getData = function(){
-  var url = "api.php?request=refresh";
+  var url = "api.php?coin="+this.coin+"&request=refresh";
   var _this = this;
   $.ajax({
     url:url,
     dataType: "json",
     success:function(data){
+      if (data.nethash_full ==null) {
+        data.nethash_full = [data.nethash]
+      }
       dogeChain.apiData = data
     }
   });
@@ -44,22 +38,27 @@ dogeChain.getData = function(){
 
 dogeChain.updateData = function(){
   if (typeof(this.apiData.nethash)=="object" &&  this.apiData.nethash.length >0){
+    if (this.apiData.nethash[0][7] != undefined)
     this.hashRate = this.apiData.nethash[0][7]
+  } else {
+    this.hashRate = this.apiData.nethash[0].wrapAt(6)
   }
+  this.hashRate = this.hashRate==Infinity ? 100000 : this.hashRate
   this.blockCount = this.apiData.blockcount
   this.difficulty = Math.ceil(parseFloat(this.apiData.difficulty))
-  this.totalCoins  = this.apiData.totalbc
+  this.totalCoins  = Math.floor(parseFloat(this.apiData.totalbc))
 }
 
 dogeChain.doHashRate = function(){
   this.hashRateArray =$(this.hashRate.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
-  tempo = this.difficulty*0.125;
+  tempo = Math.log(2+this.difficulty)*16;
   if (tempo < 60){
     tempo = 60
   }
+  
 }
 dogeChain.doHashHistory = function(){
-      data = this.apiData.nethash_full
+    data = this.apiData.nethash_full
       this.oldHashTime = Math.abs(parseInt(data[data.length-2][6]));
       this.oldHashTime = this.oldHashTime < 1 ? 1 : this.oldHashTime
       this.hashHistory = [];
@@ -75,7 +74,6 @@ dogeChain.doHashHistory = function(){
         _this.hashHistory.push(h);
       })
       this.hashHistory = _this.hashHistory
- //  this.moonDistance = Math.round((this.hashRate / this.hashHistory[this.hashHistory.length-2])*12)%12;
 }
 
 dogeChain.doBlockCount = function(){

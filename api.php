@@ -30,10 +30,12 @@ transactions - shows the amount transactions of the last blocks.
 
 function get_data($url,$filename = null) {
   //check cache
+  $chain = isset($_GET["coin"]) ? $_GET["coin"] : "doge";
+  
   if ($filename==null){
     $filename = array_pop(explode("/",$url));
   }
-  
+  $filename = $chain."/".$filename;
   if (!file_exists("cache/".$filename)){
     file_put_contents("cache/".$filename,"{'time':1}");
   }
@@ -56,12 +58,20 @@ function get_data($url,$filename = null) {
     $cache = array("time"=>$timestamp,"data"=>$data);
     file_put_contents("cache/".$filename,json_encode($cache));
   }
-  
 	return $data;
 }
 $data = null;
 if (isset($_GET["request"])){
-  $api_url = "http://dogechain.info/chain/Dogecoin/q/";
+  $chain = isset($_GET["coin"]) ? $_GET["coin"] : "doge";
+  $apis= array(
+    "bc"=>"http://blocks.blackcoin.pw/chain/BlackCoin/q/",
+    "doge"=>"http://dogechain.info/chain/Dogecoin/q/",
+    "drk"=>"http://explorer.darkcoin.io/chain/DarkCoin/q/",
+    "mzc"=>"http://explorer.mazacoin.org/chain/MazaCoin/q/",
+    "ptr"=>"http://petroexplorer.info/chain/petrodollar/q/",
+    "uno"=>"http://cryptexplorer.com/chain/Unobtanium/q/",
+    "zet"=>"http://petroexplorer.info/chain/zetacoin/q/");
+  $api_url = $apis[$chain];
   $req = $_GET["request"];
   switch ($req){
     case "refresh":
@@ -69,7 +79,12 @@ if (isset($_GET["request"])){
     $data_array["totalbc"] = json_decode(get_data($api_url."totalbc"),true);
     $data_array["blockcount"] = json_decode(get_data($api_url."getblockcount"),true);
     $data_array["difficulty"] = json_decode(get_data($api_url."getdifficulty"),true);
-    $data = json_decode(get_data($api_url."nethash/1/-1/?format=json","nethash"),true);
+    $data = get_data($api_url."nethash/1/-1/?format=json","nethash");
+    $data = str_replace('[[','[["',$data);
+    $data = str_replace(',','","',$data);
+    $data = str_replace(']]','"]]',$data);
+    $data = str_replace('" ','"',$data);
+    $data = json_decode($data,true);
     $data_array["nethash"] = $data;
     $data = get_data($api_url."nethash/1/-32?format=json","nethash_full");
     $data = str_replace(',','","',$data);
@@ -77,6 +92,7 @@ if (isset($_GET["request"])){
     $data = str_replace(']','"]',$data);
     $data = str_replace('["[','[[',$data);
     $data = str_replace(']"]',']]',$data);
+    $data = str_replace('" ','"',$data);
     $data = str_replace(']","[','],[',$data);
     $data = json_decode($data,true);
     $data_array["nethash_full"]  = $data;
@@ -98,6 +114,9 @@ if (isset($_GET["request"])){
     case "nethash":
     //only the most recent, for nethashrate
       $data = get_data($api_url."nethash/1/-1/?format=json","nethash");
+      $data = str_replace('[[','[["',$data);
+      $data = str_replace(',','","',$data);
+      $data = str_replace(']]','"]]',$data);
       $data = json_decode($data,true);
       $data = json_encode($data);
     break; 
@@ -125,18 +144,18 @@ if (isset($_GET["request"])){
     
     case "nethash_full":
     //only the most recent, for nethashrate
-      $current_block = (int)$_GET["current_block"]-32;
-      $data = get_data($api_url."nethash/1/".$current_block."?format=json","nethash_full");
+  //    $current_block = (int)$_GET["current_block"]-32;
+      $data = get_data($api_url."nethash/1/-32?format=json","nethash_full");
       $data = str_replace(',','","',$data);
       $data = str_replace('[','["',$data);
       $data = str_replace(']','"]',$data);
       $data = str_replace('["[','[[',$data);
       $data = str_replace(']"]',']]',$data);
+      $data = str_replace('" ','"',$data);
       $data = str_replace(']","[','],[',$data);
       $data = json_decode($data,true);
       $data = json_encode($data);
     break; 
-    
     case "transactions":
       $data = get_data($api_url."transactions");
     break;
