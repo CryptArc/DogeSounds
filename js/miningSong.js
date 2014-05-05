@@ -239,7 +239,7 @@ window.onload = function () {
       MIDI.programChange(6, 0);
       MIDI.programChange(9, 0);
       MIDI.programChange(10, 0);
-      MIDI.programChange(7, 0);//[116]
+      MIDI.programChange(7, 116);//[116]
       MIDI.programChange(8, 0);//[45,11]
       //first two always on, everything else * (dogeChain.blockCount%256).toString(2)
       MIDI.channelVolumes =  {0: 0.5, 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5, 5: 0.5, 6: 0.5, 7: 0.5, 8: 1, 9: 0.5, 10: 0.5}
@@ -262,11 +262,11 @@ var SwitchCoin = function(coin){
           MIDI.programChange(3, 14);//[46,52,11]
           MIDI.programChange(4, 5);//[46,11,0]
           MIDI.programChange(5, 50);
-          MIDI.programChange(6, 53);
+          MIDI.programChange(6, 52);
           MIDI.programChange(9, 50);
-          MIDI.programChange(10, 53);
+          MIDI.programChange(10, 52);
           MIDI.programChange(7, 116);//[116]
-          MIDI.programChange(8, 116);//[45,
+          MIDI.programChange(8, 45);//[45,
           dogeChain.coin = coin;
           CheckStats();
           dogeChain.startTime = new Date().getTime();
