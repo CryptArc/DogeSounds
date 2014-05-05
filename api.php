@@ -81,6 +81,7 @@ if (isset($_GET["request"])){
     $data_array["blockcount"] = json_decode(get_data($api_url."getblockcount"),true);
     $data_array["difficulty"] = json_decode(get_data($api_url."getdifficulty"),true);
     $data = get_data($api_url."nethash/1/-1/?format=json","nethash");
+    $data = str_replace('"','',$data);
     $data = str_replace('[[','[["',$data);
     $data = str_replace(',','","',$data);
     $data = str_replace(']]','"]]',$data);
@@ -88,6 +89,7 @@ if (isset($_GET["request"])){
     $data = json_decode($data,true);
     $data_array["nethash"] = $data;
     $data = get_data($api_url."nethash/1/-32?format=json","nethash_full");
+    $data = str_replace('"','',$data);
     $data = str_replace(',','","',$data);
     $data = str_replace('[','["',$data);
     $data = str_replace(']','"]',$data);
@@ -115,6 +117,7 @@ if (isset($_GET["request"])){
     case "nethash":
     //only the most recent, for nethashrate
       $data = get_data($api_url."nethash/1/-1/?format=json","nethash");
+      $data = str_replace('"','',$data);
       $data = str_replace('[[','[["',$data);
       $data = str_replace(',','","',$data);
       $data = str_replace(']]','"]]',$data);
@@ -147,6 +150,7 @@ if (isset($_GET["request"])){
     //only the most recent, for nethashrate
   //    $current_block = (int)$_GET["current_block"]-32;
       $data = get_data($api_url."nethash/1/-32?format=json","nethash_full");
+      $data = str_replace('"','',$data);
       $data = str_replace(',','","',$data);
       $data = str_replace('[','["',$data);
       $data = str_replace(']','"]',$data);
