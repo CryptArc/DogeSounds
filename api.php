@@ -70,6 +70,7 @@ if (isset($_GET["request"])){
     "mzc"=>"http://explorer.mazacoin.org/chain/MazaCoin/q/",
     "ptr"=>"http://petroexplorer.info/chain/petrodollar/q/",
     "uno"=>"http://cryptexplorer.com/chain/Unobtanium/q/",
+    "pig"=>"http://piggycha.in/chain/Piggycoin/q/",
     "zet"=>"http://petroexplorer.info/chain/zetacoin/q/");
   $api_url = $apis[$chain];
   $req = $_GET["request"];
