@@ -32,7 +32,11 @@ themes["minimal"] = function(i,t,c){
 
   if (vol > 256) { vol = 256 } 
   var out = MIDI.noteOn(c,note, vol, 0/1000);
-  dogeChain.runningNote = MIDI.noteOn(c,note, vol, 0/1000);
+  MIDI.noteOff(c,note,t*tempo/1000)
+  
+  dogeChain.runningNote = MIDI.noteOn(c,note2, vol, 0/1000);
+  MIDI.noteOff(c,note2,t*tempo/1000)
+
   if (c < 6){
     dogeChain.lastNote[c] = note;
   }
