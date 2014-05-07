@@ -22,7 +22,7 @@ themes["minimal"] = function(i,t,c){
   sstep = step + Math.floor(step/(Math.log(dogeChain.hashRate)+Math.log(3+step)))
   sm = (7*(sstep % smm))%12;
   
-  note = 12+sm+(((dc * i *7)%84)+ t)%104;
+  note = 12+sm+(((dc * i *[7,4].wrapAt(i))%84)+ t)%104;
   note2 = 12+ sm+(((i *7*dc)%84)+ t + dogeChain.harmonize)%104;
   vol = 32*Math.abs((128-(i%127))/(note+12));
   vol = vol* MIDI.channelVolumes[c] * masterVolume;
@@ -49,7 +49,7 @@ themes["minimal_choir"] = function(i,t,c){
   var dc = Math.floor(Math.log(dogeChain.difficulty)/Math.log(500));
   
   sstep = step + Math.floor(step/(Math.log(dogeChain.hashRate)+Math.log(3+step)))
-  sm = (7*(sstep % smm))%12;
+  sm = ([7,4,5,2].wrapAt(i)*(sstep % smm))%12;
   note = 12+octave+ sm +(((i *[7*dc,5*dc][i%2])%28)+ t);
   note2 = 12+octave+ sm+(((i *[7*dc,5*dc][i%2])%28)+ t + dogeChain.harmonize);
   vol = 16*Math.abs((128-i)/(note+24))* MIDI.channelVolumes[c] * masterVolume;
@@ -57,8 +57,8 @@ themes["minimal_choir"] = function(i,t,c){
 
   MIDI.noteOn(c,note, vol, 0);
   MIDI.noteOn(c,note2, vol, 0);
-  MIDI.noteOff(c,note,(10-dogeChain.hashRateArray.wrapAt(c))*tempo/1000)
-  MIDI.noteOff(c,note2,(10-dogeChain.hashRateArray.wrapAt(c))*tempo/1000)
+  MIDI.noteOff(c,note,((10-dogeChain.hashRateArray.wrapAt(c)))*tempo/1000)
+  MIDI.noteOff(c,note2,((10-dogeChain.hashRateArray.wrapAt(c)))*tempo/1000)
 
   if (c < 6){
     dogeChain.lastNote[c] = note;
@@ -78,7 +78,7 @@ var Step = function(){
 
 }
 var ShuffleInstruments = function(insts){
-  MIDI.programChange(0, [ia.wrapAt(0),ia.wrapAt(0)][parseInt(insts[4])%2]); 
+  MIDI.programChange(0, [ia.wrapAt(0),ia.wrapAt(1)][parseInt(insts[4])%2]); 
   MIDI.programChange(1, [ia.wrapAt(2),ia.wrapAt(0),ia.wrapAt(3)][parseInt(insts[3])]);
   MIDI.programChange(2, [ia.wrapAt(1),ia.wrapAt(2)][parseInt(insts[2])%2]);
   MIDI.programChange(3, [ia.wrapAt(1),ia.wrapAt(4),ia.wrapAt(3)][parseInt(insts[1])]);
@@ -313,7 +313,7 @@ var loadAll = function(){
   ia = [0,46,45,11,5];
   
   MIDI.loadPlugin({
-    instruments: [ "acoustic_grand_piano","synth_strings_1","vibraphone","orchestral_harp","voice_oohs", "taiko_drum","choir_aahs","pizzicato_strings","electric_piano_2"],
+    instruments: [ "acoustic_grand_piano","violin","vibraphone","orchestral_harp","voice_oohs", "taiko_drum","choir_aahs","pizzicato_strings","electric_piano_2"],
     callback: function() {
       MIDI.loader.stop(); 
       MIDI.programChange(0, 0); //[0,46]
@@ -321,10 +321,10 @@ var loadAll = function(){
       MIDI.programChange(2, 11);//[46,45]
       MIDI.programChange(3, 14);//[46,52,11]
       MIDI.programChange(4, 4);//[46,11,0]
-      MIDI.programChange(5, 50);
-      MIDI.programChange(6, 53);
-      MIDI.programChange(9, 50);
-      MIDI.programChange(10, 53);
+      MIDI.programChange(5, 40);
+      MIDI.programChange(6, 52);
+      MIDI.programChange(9, 40);
+      MIDI.programChange(10, 52);
       MIDI.programChange(7, 117);//[116]
       MIDI.programChange(8, 117);//[45,
       CheckStats();

@@ -1,24 +1,27 @@
 Array.prototype.wrapAt = function(i){var out = this[i%this.length]; return out}
 
 var dogeChain = new Object();
-dogeChain.hashRateArray = [1,2,3,4,5,6,7];
+dogeChain.hashRateArray = [1,2,5,6,1,2,6];
 dogeChain.lastNote = [0,1,2,3,4,5,6,7,8,9,10,11,12];
-dogeChain.totalCoinsArray = [1,2,3];
-dogeChain.blockCountArray = [1,2,3];
-dogeChain.difficultyArray = [1,2,3];
+dogeChain.totalCoinsArray = [1,2,5,6];
+dogeChain.blockCountArray = [1,2,5,6,3];
+dogeChain.difficultyArray = [1,2,5,6];
 dogeChain.hashHistory = [1,2,3];
 dogeChain.oldHashRate = 1234;
-dogeChain.hashRate = 123456;
-dogeChain.totalCoins = 123456789;
+dogeChain.hashRate = 12563;
+dogeChain.totalCoins = 12356312563;
 dogeChain.oldBlockCount = 1234;
-dogeChain.blockCount= 1234;
-dogeChain.difficulty = 1234;
+dogeChain.blockCount= 1256;
+dogeChain.difficulty = 1256;
 dogeChain.oldHashTime = 100;
 dogeChain.coin = "doge"; //"uno","doge", "zet","ptr"
 dogeChain.startTime = new Date().getTime();
 dogeChain.apiData = {};
+
 dogeChain.doTotalCoins = function(){
-  this.totalCoinsArray =$(this.totalCoins.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
+  if (typeof(this.totalCoins)=="number"){
+    this.totalCoinsArray =$(this.totalCoins.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
+  }
 }
 
 dogeChain.getData = function(){
