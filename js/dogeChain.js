@@ -14,6 +14,7 @@ dogeChain.oldBlockCount = 1234;
 dogeChain.blockCount= 1256;
 dogeChain.difficulty = 1256;
 dogeChain.oldHashTime = 100;
+dogeChain.offset=0;
 dogeChain.coin = "doge"; //"uno","doge", "zet","ptr"
 dogeChain.startTime = new Date().getTime();
 dogeChain.apiData = {};
@@ -40,11 +41,14 @@ dogeChain.getData = function(){
 }
 
 dogeChain.updateData = function(){
-  if (typeof(this.apiData.nethash)=="object" &&  this.apiData.nethash.length >0){
-    if (this.apiData.nethash[0][7] != undefined)
+  if (typeof(this.apiData.nethash)=="object" &&  this.apiData.nethash[0][7]){
     this.hashRate = this.apiData.nethash[0][7]
+    this.oldHashRate = this.apiData.nethash_full[1][7]
+
   } else {
     this.hashRate = this.apiData.nethash[0].wrapAt(6)
+    this.oldHashRate = this.apiData.nethash_full[1].wrapAt(6)
+
   }
   this.hashRate = this.hashRate==Infinity ? 100000 : this.hashRate
   this.blockCount = this.apiData.blockcount
