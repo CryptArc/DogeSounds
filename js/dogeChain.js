@@ -15,6 +15,7 @@ dogeChain.blockCount= 1256;
 dogeChain.difficulty = 1256;
 dogeChain.oldHashTime = 100;
 dogeChain.offset=0;
+dogeChain.hashPos = 5;
 dogeChain.coin = "doge"; //"uno","doge", "zet","ptr"
 dogeChain.startTime = new Date().getTime();
 dogeChain.apiData = {};
@@ -34,6 +35,8 @@ dogeChain.getData = function(){
     success:function(data){
       if (data.nethash_full ==null) {
         data.nethash_full = [data.nethash]
+      } else {
+        data.nethash_full = data.nethash_full.reverse()
       }
       dogeChain.apiData = data
     }
@@ -46,8 +49,8 @@ dogeChain.updateData = function(){
     this.oldHashRate = this.apiData.nethash_full[1][7]
 
   } else {
-    this.hashRate = this.apiData.nethash[0].wrapAt(6)
-    this.oldHashRate = this.apiData.nethash_full[1].wrapAt(6)
+    this.hashRate = $(this.apiData.nethash[0]).last()[0]
+    this.oldHashRate = $(this.apiData.nethash_full[1]).last()[0]
 
   }
   this.hashRate = this.hashRate==Infinity ? 100000 : this.hashRate
@@ -66,21 +69,20 @@ dogeChain.doHashRate = function(){
 }
 dogeChain.doHashHistory = function(){
     data = this.apiData.nethash_full
-      this.oldHashTime = Math.abs(parseInt(data[data.length-2][6]));
-      this.oldHashTime = this.oldHashTime < 1 ? 1 : this.oldHashTime
-      this.hashHistory = [];
-      var _this = this
-      $(data).each(function(i,e){
-        var h = parseFloat(e[6]);
-       if (h > 10000) {
-         h=1;
-       }
-        if ((h==NaN) || h<1|| h>256){
-          h=1;
-        }
-        _this.hashHistory.push(h);
-      })
-      this.hashHistory = _this.hashHistory
+    this.oldHashTime = Math.abs(parseInt(data[data.length-2][6]));
+    this.oldHashTime = this.oldHashTime < 1 ? 1 : this.oldHashTime
+    this.hashHistory = [];
+    var hashFirst = data[0][this.hashPos];
+    debug.hashFirst = hashFirst
+    var _this = this
+    for (i=0; i< data.length; i++){
+      h = parseFloat(data[i][this.hashPos]);
+      h= Math.ceil(128*h/hashFirst);
+      if (h==Infinity) {
+        h= 128
+      }
+      this.hashHistory.push(h)
+    }
 }
 
 dogeChain.doBlockCount = function(){

@@ -6,7 +6,7 @@ var tempo = 108;
 var ln2 = Math.log(2);
 var ln1 = Math.log(1.5);
 var ia = [0];
-
+var debug ={}
 var masterVolume = 1;
 
 var themes = {};
@@ -19,9 +19,11 @@ themes["minimal"] = function(i,t,c){
   var smm =1+ dogeChain.blockCountArray[(1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000))))%dogeChain.blockCountArray.length];
   var sstep;
   var dc = Math.floor(Math.log(dogeChain.difficulty)/Math.log(500));
-  sstep = step + Math.floor(step/(Math.log(dogeChain.hashRate)+Math.log(3+step)))
-  sm = (7*(sstep % smm))%12;
-  
+  var dur = dogeChain.hashRateArray.wrapAt(t+i) + 3
+  sstep = 12 * parseFloat(dogeChain.hashRate) 
+  sstep = Math.floor(sstep / parseFloat($(dogeChain.apiData.nethash_full.wrapAt(Math.floor(step/Math.log(dogeChain.hashRate)))).last()[0]))
+  sm = (7*(sstep))%12;
+  debug.sstep =sstep;
   note = 12+dogeChain.offset+sm+(((dc * i *[7,4].wrapAt(i))%84)+ t)%104;
   note2 = 12+dogeChain.offset+ sm+(((i *7*dc)%84)+ t + dogeChain.harmonize)%104;
   vol = 32*Math.abs((128-(i%127))/(note+12));
@@ -31,9 +33,10 @@ themes["minimal"] = function(i,t,c){
 
 
   if (vol > 256) { vol = 256 } 
-  var out = MIDI.noteOn(c,note, vol, 0/1000);
-  
-  dogeChain.runningNote = MIDI.noteOn(c,note2, vol, 0/1000);
+  var out = MIDI.noteOn(c,note, vol, 0);
+  dogeChain.runningNote = MIDI.noteOn(c,note2, vol,0);
+  MIDI.noteOff(c,note,dur*tempo/1000);
+  MIDI.noteOff(c,note2,dur*tempo/1000);
 
   if (c < 6){
     dogeChain.lastNote[c] = note;
@@ -50,8 +53,10 @@ themes["minimal_choir"] = function(i,t,c){
   var sstep;
   var dc = Math.floor(Math.log(dogeChain.difficulty)/Math.log(500));
   
-  sstep = step + Math.floor(step/(Math.log(dogeChain.hashRate)+Math.log(3+step)))
-  sm = ([7,4,5,2].wrapAt(i)*(sstep % smm))%12;
+  sstep = 12 * parseFloat(dogeChain.hashRate) 
+  sstep = Math.floor(sstep / parseFloat($(dogeChain.apiData.nethash_full.wrapAt(Math.floor(step/Math.log(dogeChain.hashRate)))).last()[0]))
+  
+  sm = ([7,4,5,2].wrapAt(i)*(sstep))%12;
   note = 12+dogeChain.offset+octave+ sm +(((i *[7*dc,5*dc][i%2])%28)+ t);
   note2 = 12+dogeChain.offset+octave+ sm+(((i *[7*dc,5*dc][i%2])%28)+ t + dogeChain.harmonize);
   vol = 16*Math.abs((128-i)/(note+24))* MIDI.channelVolumes[c] * masterVolume;
@@ -207,7 +212,7 @@ var Notes = function(){
   if (base < 2) { base =2 }
   var ins = Number(step%Math.pow(2,12)).toString(base).split("");
   if (ins.wrapAt(step)=="1"){
-    noteTheme(dogeChain.hashHistory[step%32],dogeChain.moonDistance,8)
+    noteTheme(dogeChain.hashHistory.wrapAt(step),dogeChain.moonDistance,8)
   }
 
   var ins = Number(step).toString(base).split("");
