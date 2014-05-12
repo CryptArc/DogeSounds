@@ -1,5 +1,19 @@
 Array.prototype.wrapAt = function(i){var out = this[i%this.length]; return out}
 
+Array.prototype.rotate = (function() {
+    var unshift = Array.prototype.unshift,
+        splice = Array.prototype.splice;
+
+    return function(count) {
+        var len = this.length >>> 0,
+            count = count >> 0;
+
+        unshift.apply(this, splice.call(this, count % len, len));
+        return this;
+    };
+})();
+
+
 var dogeChain = new Object();
 dogeChain.hashRateArray = [1,2,5,6,1,2,6];
 dogeChain.lastNote = [0,1,2,3,4,5,6,7,8,9,10,11,12];
