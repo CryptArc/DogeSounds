@@ -8,7 +8,9 @@ var ln1 = Math.log(1.5);
 var ia = [0];
 var debug ={}
 var masterVolume = 1;
-
+var scales = [[0,2,4,7,9,11],[2,5,7,9,12],[4,7,9,11,12,14],[-3,0,2,4,5,7]]
+var scale = scales[0];
+var scalestep = 0;
 var themes = {};
 themes["minimal"] = function(i,t,c){
   var note,note2,vol,sm;
@@ -16,16 +18,18 @@ themes["minimal"] = function(i,t,c){
     return false;
   };
   var now = new Date().getTime();
-  var smm =1+ dogeChain.blockCountArray[(1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000))))%dogeChain.blockCountArray.length];
   var sstep;
   var dc = Math.floor(Math.log(dogeChain.difficulty)/Math.log(500));
-  var dur = dogeChain.hashRateArray.wrapAt(t+i) + 3
-  sstep = 12 * parseFloat(dogeChain.hashRate) 
+  var dur = dogeChain.hashRateArray.wrapAt(t+i) + 3;
+  var octave = 12;
+  sstep = 12 * parseFloat(dogeChain.hashRate)   
   sstep = Math.floor(sstep / parseFloat($(dogeChain.apiData.nethash_full.wrapAt(Math.floor(step/Math.log(dogeChain.hashRate)))).last()[0]))
-  sm = (7*(sstep))%12;
+  sm = (7*(sstep)%12);
+  sm = sm + ((7*Math.ceil(Math.log(dogeChain.apiData.nethash_full.wrapAt(i+c)[1])%3))%12)
   debug.sstep =sstep;
-  note = 12+dogeChain.offset+sm+(((dc * i *[7,4].wrapAt(i))%84)+ t)%104;
-  note2 = 12+dogeChain.offset+ sm+(((i *7*dc)%84)+ t + dogeChain.harmonize)%104;
+  octave =(c==7) ? 12 :  12 *(1+((dogeChain.blockCount +c)%3));
+  note = octave+dogeChain.offset+sm+(scale.wrapAt(i)+t)%104;
+  note2 = octave+dogeChain.offset+sm+(scale.wrapAt(i)+t+dogeChain.harmonize)%104;
   vol = 32*Math.abs((128-(i%127))/(note+12));
   vol = vol* MIDI.channelVolumes[c] * masterVolume;
 
@@ -49,7 +53,6 @@ themes["minimal_choir"] = function(i,t,c){
     return false;
   }
   var now = new Date().getTime();
-  var smm = 1+dogeChain.blockCountArray.wrapAt((1+(Math.floor(2*(now - dogeChain.startTime) / (dogeChain.oldHashTime*1000)))));
   var sstep;
   var dc = Math.floor(Math.log(dogeChain.difficulty)/Math.log(500));
   
@@ -57,8 +60,11 @@ themes["minimal_choir"] = function(i,t,c){
   sstep = Math.floor(sstep / parseFloat($(dogeChain.apiData.nethash_full.wrapAt(Math.floor(step/Math.log(dogeChain.hashRate)))).last()[0]))
   
   sm = ([7,4,5,2].wrapAt(i)*(sstep))%12;
-  note = 12+dogeChain.offset+octave+ sm +(((i *[7*dc,5*dc][i%2])%28)+ t);
-  note2 = 12+dogeChain.offset+octave+ sm+(((i *[7*dc,5*dc][i%2])%28)+ t + dogeChain.harmonize);
+  sm = sm + ((7*Math.ceil(Math.log(dogeChain.apiData.nethash_full.wrapAt(i+c)[1])%3))%12)
+  
+  octave = 12 *(1+((dogeChain.blockCount +c)%3));
+  note = octave + dogeChain.offset+octave+ sm +scale.wrapAt(i)+ t;
+  note2 = octave + dogeChain.offset+octave+ sm+scale.wrapAt(i)+ t + dogeChain.harmonize;
   vol = 16*Math.abs((128-i)/(note+24))* MIDI.channelVolumes[c] * masterVolume;
   if (vol > 256) { vol = 256 } 
 
@@ -113,7 +119,7 @@ if (dogeChain.blockCount != dogeChain.oldBlockCount) {
       var vs =  {0: 1.5, 1: 1, 2: 0.5, 3: 1, 4: 1, 5: 0.8, 6: 0.8, 7: 2, 8: 1, 9: 0.5, 10: 0.5};
       MIDI.channelVolumes[i+2] = parseInt(e) * vs[i+2];
     })
-    MIDI.channelVolumes[0] = 1.5
+    MIDI.channelVolumes[0] = 1
   
   //dogeChain.dur = 0.75;
   if (dogeChain.hashRate  > dogeChain.oldHashRate) {
@@ -133,8 +139,11 @@ var TotalCoins = function(){
   var tz = parseInt(tc[0])+1;
   var tl = tc.length;
   tc = tc.wrapAt(step);
+  //block transactions
+  //tc = Math.floor(7*Math.log(dogeChain.apiData.nethash_full.wrapAt(step)[1]));
+  //tl =  Math.floor(7*Math.log(dogeChain.apiData.nethash_full.wrapAt(step)[2]));
   noteTheme(parseInt(tc),24+dogeChain.moonDistance,0);
-  noteTheme((Math.ceil(step/tz)%(tl*tz)),24+dogeChain.moonDistance,1);
+  noteTheme(parseInt(tl),24+dogeChain.moonDistance,1);
   NotesCallback("totalCoins",parseInt(tc));
   
 }
@@ -144,6 +153,8 @@ var HashRate = function(){
   var tz = parseInt(tc[0])+1;
   var tl = tc.length;
   tc = tc.wrapAt(step)
+  //tc = Math.log(7*dogeChain.apiData.nethash_full.wrapAt(step)[4]);
+  //tl =  Math.log(7*dogeChain.apiData.nethash_full.wrapAt(step)[5]);
   noteTheme(parseInt(tc),24+dogeChain.moonDistance,2);
   noteTheme((Math.ceil(step/tz)%(tl*tz)),36+dogeChain.moonDistance,3);
   NotesCallback("hashRate",parseInt(tc));
@@ -177,7 +188,10 @@ var NewBlock = function(){
   step = 0;
   instep++;
 }
-var NotesCallback = function(n,i){};
+var NotesCallback = function(n,i){
+  
+  
+};
 var Notes = function(){
   
   if (dogeChain.blockCount != dogeChain.oldBlockCount) {
@@ -226,8 +240,12 @@ var Notes = function(){
 
   var ins = Number(step).toString(base).split("");
   var inz = ins.length*4;
+  debug.inz = inz
   if ((step%inz)==0){
-    var bassy1 = noteTheme(0,dogeChain.moonDistance+12,7)
+    var bassy1 = noteTheme(0,dogeChain.moonDistance+12,7);
+    var nh = dogeChain.apiData.nethash_full;
+    scalestep++;
+    scales.wrapAt(Math.floor(Math.log(dogeChain.hashRate / (nh.wrapAt(scalestep)[0] * nh.wrapAt(scalestep)[4] * dogeChain.totalCoins))))
   }
   
   if (step%(inz*parseInt(dogeChain.totalCoins.toString().split("")[instep%4]))==0){
@@ -331,7 +349,7 @@ var loadAll = function(){
     callback: function() {
       MIDI.loader.stop(); 
       MIDI.programChange(0, 0); //[0,46]
-      MIDI.programChange(1, 46);//[52,46]
+      MIDI.programChange(1, 45);//[52,46]
       MIDI.programChange(2, 11);//[46,45]
       MIDI.programChange(3, 14);//[46,52,11]
       MIDI.programChange(4, 4);//[46,11,0]
