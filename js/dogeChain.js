@@ -1,5 +1,9 @@
-Array.prototype.wrapAt = function(i){var out = this[i%this.length]; return out}
-
+Array.prototype.wrapAt = function(i){
+  var out;
+  out = this[parseInt(Math.floor(Math.abs(i)))%this.length]; 
+  return out
+}
+Array.prototype.sum = function (){ var out =0; for (i=0; i<this.length; i++) {out = out + this[i]}; return out }
 Array.prototype.rotate = (function() {
     var unshift = Array.prototype.unshift,
         splice = Array.prototype.splice;
@@ -30,7 +34,8 @@ dogeChain.difficulty = 1256;
 dogeChain.oldHashTime = 100;
 dogeChain.offset=0;
 dogeChain.hashPos = 5;
-dogeChain.coin = "doge"; //"uno","doge", "zet","ptr"
+dogeChain.interval =1;
+dogeChain.coin = window.location.hash.length > 0 ? window.location.hash.replace("#","") : "doge"//"uno","doge", "zet","ptr"
 dogeChain.startTime = new Date().getTime();
 dogeChain.apiData = {};
 
@@ -41,7 +46,7 @@ dogeChain.doTotalCoins = function(){
 }
 
 dogeChain.getData = function(){
-  var url = "api.php?coin="+this.coin+"&request=refresh";
+  var url = "api.php?coin="+this.coin+"&request=refresh&interval="+this.interval;
   var _this = this;
   $.ajax({
     url:url,

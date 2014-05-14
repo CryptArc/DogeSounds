@@ -67,13 +67,13 @@ if (isset($_GET["request"])){
     "bc"=>"http://blocks.blackcoin.pw/chain/BlackCoin/q/",
     "doge"=>"http://dogechain.info/chain/Dogecoin/q/",
     "drk"=>"http://explorer.darkcoin.io/chain/DarkCoin/q/",
-    "mzc"=>"http://explorer.mazacoin.org/chain/MazaCoin/q/",
     "ptr"=>"http://petroexplorer.info/chain/petrodollar/q/",
     "uno"=>"http://cryptexplorer.com/chain/Unobtanium/q/",
     "pig"=>"http://piggycha.in/chain/Piggycoin/q/",
     "zet"=>"http://petroexplorer.info/chain/zetacoin/q/");
   $api_url = $apis[$chain];
   $req = $_GET["request"];
+  $interval = (isset($_GET["interval"])) ? (int)$_GET["interval"] : 1;
   switch ($req){
     case "refresh":
     $data_array = array();
@@ -88,7 +88,7 @@ if (isset($_GET["request"])){
     $data = str_replace('" ','"',$data);
     $data = json_decode($data,true);
     $data_array["nethash"] = $data;
-    $data = get_data($api_url."nethash/1/-32?format=json","nethash_full");
+    $data = get_data($api_url."nethash/".$interval."/".(-32 * $interval)."?format=json","nethash_full");
     $data = str_replace('"','',$data);
     $data = str_replace(',','","',$data);
     $data = str_replace('[','["',$data);
@@ -149,7 +149,7 @@ if (isset($_GET["request"])){
     case "nethash_full":
     //only the most recent, for nethashrate
   //    $current_block = (int)$_GET["current_block"]-32;
-      $data = get_data($api_url."nethash/1/-32?format=json","nethash_full");
+      $data = get_data($api_url."nethash/".$interval."/".(-32 * $interval)."?format=json","nethash_full");
       $data = str_replace('"','',$data);
       $data = str_replace(',','","',$data);
       $data = str_replace('[','["',$data);
