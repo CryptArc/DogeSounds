@@ -71,6 +71,8 @@ if (isset($_GET["request"])){
     "uno"=>"http://cryptexplorer.com/chain/Unobtanium/q/",
     "pig"=>"http://piggycha.in/chain/Piggycoin/q/",
     "naut"=>"http://explorer.nautiluscoin.com/chain/Nautiluscoin/q/",
+    "vert"=>"http://cryptexplorer.com/chain/VertCoin/q/",
+    "dgb"=>"http://cryptexplorer.com/chain/DigiByte/q/",
     "zet"=>"http://petroexplorer.info/chain/zetacoin/q/");
   $api_url = $apis[$chain];
   $req = $_GET["request"];
