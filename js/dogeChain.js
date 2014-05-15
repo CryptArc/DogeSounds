@@ -7,11 +7,9 @@ Array.prototype.sum = function (){ var out =0; for (i=0; i<this.length; i++) {ou
 Array.prototype.rotate = (function() {
     var unshift = Array.prototype.unshift,
         splice = Array.prototype.splice;
-
     return function(count) {
         var len = this.length >>> 0,
             count = count >> 0;
-
         unshift.apply(this, splice.call(this, count % len, len));
         return this;
     };
@@ -38,6 +36,7 @@ dogeChain.interval =1;
 dogeChain.coin = window.location.hash.length > 0 ? window.location.hash.replace("#","") : "doge"//"uno","doge", "zet","ptr"
 dogeChain.startTime = new Date().getTime();
 dogeChain.apiData = {};
+dogeChain.dataCallback = function() {}
 
 dogeChain.doTotalCoins = function(){
   if (typeof(this.totalCoins)=="number"){
@@ -53,13 +52,28 @@ dogeChain.getData = function(){
     dataType: "json",
     success:function(data){
       if (data.nethash_full ==null) {
-        data.nethash_full = [data.nethash]
+        data.nethash_full = _this.apiData.nethash_full
       } else {
         data.nethash_full = data.nethash_full.reverse()
       }
       dogeChain.apiData = data
     }
   });
+}
+
+dogeChain.getAverageBlockTime = function() {
+  var times =[];
+  var diffs = 0;
+  if (this.apiData.nethash_full != undefined){
+    var nh = this.apiData.nethash_full;
+    for (x=0; x < nh.length-1; x++) {
+      diffs = diffs + (parseInt(nh[x][1]) - parseInt(nh[x+1][1]));
+    };
+    debug.diffs= diffs
+    return (diffs / (nh[0][0] - nh[nh.length-1][0]))
+  } else {
+    return 32 
+  }
 }
 
 dogeChain.updateData = function(){
@@ -70,12 +84,13 @@ dogeChain.updateData = function(){
   } else {
     this.hashRate = $(this.apiData.nethash[0]).last()[0]
     this.oldHashRate = $(this.apiData.nethash_full[1]).last()[0]
-
   }
   this.hashRate = this.hashRate==Infinity ? 100000 : this.hashRate
   this.blockCount = this.apiData.blockcount
   this.difficulty = Math.ceil(parseFloat(this.apiData.difficulty))
   this.totalCoins  = Math.floor(parseFloat(this.apiData.totalbc))
+  this.dataCallback()
+  
 }
 
 dogeChain.doHashRate = function(){

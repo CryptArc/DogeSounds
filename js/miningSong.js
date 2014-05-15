@@ -93,11 +93,13 @@ var ShuffleInstruments = function(insts){
   MIDI.programChange(8, [ia.wrapAt(2),ia.wrapAt(3)][parseInt(insts[0])%2]);
   
 }
+
+
 var CheckStats = function(){
   if (!allLoaded && instep > 0){
     loadAll();
   }
-  dogeChain.startTime = new Date().getTime();
+  dogeChain.startTime = (dogeChain.apiData.nethash_full==undefined) ? new Date().getTime() : parseInt(dogeChain.apiData.nethash_full[0][1])
   dogeChain.getData();
   
 if (dogeChain.blockCount != dogeChain.oldBlockCount) {
