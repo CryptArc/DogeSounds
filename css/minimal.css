@@ -62,12 +62,10 @@ a {
   text-align: center;
   border-radius: 5px; 
   border: 5px solid black;
-  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
-#nav .item:first-child {
-  margin-left: 0px;
-}
 
 #footer {
   position:fixed;
