@@ -36,7 +36,13 @@ dogeChain.interval =1;
 dogeChain.coin = window.location.hash.length > 0 ? window.location.hash.replace("#","") : "doge"//"uno","doge", "zet","ptr"
 dogeChain.startTime = new Date().getTime();
 dogeChain.apiData = {};
+dogeChain.scaleOffset =0;
 dogeChain.dataCallback = function() {}
+dogeChain.difficultySlope = function(){
+  var nh = this.apiData.nethash_full
+  var ds = (parseFloat(nh[0][4]) / parseFloat(nh[1][4])) 
+  return ds
+}
 
 dogeChain.doTotalCoins = function(){
   if (typeof(this.totalCoins)=="number"){
@@ -77,14 +83,8 @@ dogeChain.getAverageBlockTime = function() {
 }
 
 dogeChain.updateData = function(){
-  if (typeof(this.apiData.nethash)=="object" &&  this.apiData.nethash[0][7]){
-    this.hashRate = this.apiData.nethash[0][7]
-    this.oldHashRate = this.apiData.nethash_full[1][7]
-
-  } else {
-    this.hashRate = $(this.apiData.nethash[0]).last()[0]
-    this.oldHashRate = $(this.apiData.nethash_full[1]).last()[0]
-  }
+  this.hashRate = $(this.apiData.nethash_full[0]).last()[0]
+  this.oldHashRate = $(this.apiData.nethash_full[1]).last()[0]
   this.hashRate = this.hashRate==Infinity ? 100000 : this.hashRate
   this.blockCount = this.apiData.blockcount
   this.difficulty = Math.ceil(parseFloat(this.apiData.difficulty))
@@ -95,11 +95,10 @@ dogeChain.updateData = function(){
 
 dogeChain.doHashRate = function(){
   this.hashRateArray =$(this.hashRate.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
-  tempo = Math.log(2+this.difficulty)*16;
-  if (tempo < 60){
-    tempo = 60
+  tempo = Math.log(3+this.difficulty)*(24 / Math.log(Math.log(3+this.difficulty)/Math.log(10))) ;
+  if (tempo < 90){
+    tempo = 90
   }
-  
 }
 dogeChain.doHashHistory = function(){
     data = this.apiData.nethash_full

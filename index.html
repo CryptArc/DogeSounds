@@ -106,8 +106,9 @@ var blockData = {
   "zet":"http://petroexplorer.info/chain/zetacoin/q/",
   "naut":"http://explorer.nautiluscoin.com/chain/Nautiluscoin/q/",
   "vert":"http://cryptexplorer.com/chain/VertCoin/q/",
-  "dgb":"http://cryptexplorer.com/chain/DigiByte/q/"
-  
+  "dgb":"http://cryptexplorer.com/chain/DigiByte/q/",
+  "ltc":"http://explorer.litecoin.net/chain/Litecoin/q/",
+  "btc":"https://blockexplorer.com/q/"
 } 
 
 var donationAddrs = {
@@ -165,9 +166,9 @@ $(document).ready(function(){
     $(".play").removeClass("active");
   });
   $(".volUp").click(function(i,e){
-    masterVolume = masterVolume + 0.1;
-    if (masterVolume >3) {
-      masterVolume = 3;
+    masterVolume = masterVolume + 0.025;
+    if (masterVolume >1) {
+      masterVolume = 1;
     }
     $(".vu").css({width:(10*masterVolume).toString()+"px"})
   });
