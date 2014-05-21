@@ -115,6 +115,7 @@ var Step = function(){
   dogeChain.updateData();
   dogeChain.doTotalCoins();
   dogeChain.doHashRate();
+
   dogeChain.doBlockCount();
   dogeChain.doDifficulty();
   dogeChain.doHashHistory();
@@ -171,11 +172,14 @@ var CheckStats = function(){
 }
 
 var TotalCoins = function(){
+  //var nh = dogeChain.apiData.nethash_full;
+  //var bs =Math.ceil(Math.log(dogeChain.difficulty) / Math.log(10));
+//  var tc = Math.ceil(Math.pow(bs,(nh[0].reverse()[0] / nh[1].reverse()[0])));
   var tc = dogeChain.totalCoinsArray.length+ dogeChain.hashRateArray[0];
   var n1; var n2;
   //block transactions
-  n1 =(Math.pow(12 , dogeChain.apiData.nethash_full.wrapAt(step%tc)[4]/dogeChain.difficulty))%12
-  n2 =(Math.pow(12 , dogeChain.difficulty/dogeChain.apiData.nethash_full.wrapAt(step%dogeChain.totalCoinsArray.sum())[4]))%12
+  n1 =(Math.pow(12 , Math.log(dogeChain.apiData.nethash_full.wrapAt(step%tc)[4]/dogeChain.difficulty)))%12
+  n2 =(Math.pow(12 , Math.log(dogeChain.difficulty/dogeChain.apiData.nethash_full.wrapAt(step%dogeChain.totalCoinsArray.sum())[4])))%12
 
   noteTheme(parseInt(n1),24+dogeChain.moonDistance,0);
   noteTheme(parseInt(n2),24+dogeChain.moonDistance,1);
