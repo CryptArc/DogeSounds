@@ -75,6 +75,8 @@ if (isset($_GET["request"])){
     "dgb"=>"http://cryptexplorer.com/chain/DigiByte/q/",
     "ltc"=>"http://explorer.litecoin.net/chain/Litecoin/q/",
     "btc"=>"https://blockexplorer.com/q/",
+    "xdq"=>"http://diracexplorer.org:2750/chain/Dirac/q/",
+
     "zet"=>"http://petroexplorer.info/chain/zetacoin/q/");
   $api_url = $apis[$chain];
   $req = $_GET["request"];
