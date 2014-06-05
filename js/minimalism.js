@@ -323,13 +323,35 @@ window.onload = function () {
     }
   });  
 };
+var SwichOrc = function (){
+  ia = [26, 28, 113, 12, 8];
+  MIDI.loadPlugin({
+    instruments: ["electric_guitar_jazz","lead_2_sawtooth","agogo", "celesta","pad_5_bowed","marimba","electric_guitar_muted","pad_4_choir", "taiko_drum"],
+    callback: function() {
+      MIDI.loader.stop(); 
+      MIDI.programChange(0, 12); //[0,46]
+      MIDI.programChange(1, 45);//[52,46]
+      MIDI.programChange(2, 11);//[46,45]
+      MIDI.programChange(3, 14);//[46,52,11]
+      MIDI.programChange(4, 4);//[46,11,0]
+      MIDI.programChange(5, 92);
+      MIDI.programChange(6, 91);
+      MIDI.programChange(9, 92);
+      MIDI.programChange(10, 91);
+      MIDI.programChange(7, 116);//[116]
+      MIDI.programChange(8, 31);//[45,
+      MIDI.programChange(12, 31);//[45,
+      MIDI.programChange(13, 31);//[45,
+    }
+    })
+}
 
 
 var loadAll = function(){
   allLoaded = true;
-  ia = [0,46,45,11,5];
+  ia = [1,46,45,11,5];
   MIDI.loadPlugin({
-    instruments: [ "acoustic_grand_piano","soprano_sax","violin","vibraphone","orchestral_harp","voice_oohs", "taiko_drum","choir_aahs","pizzicato_strings","electric_piano_2"],
+    instruments: [ "acoustic_grand_piano ", "bright_acoustic_piano","violin","vibraphone","orchestral_harp", "taiko_drum","choir_aahs","pizzicato_strings","electric_piano_2"],
     callback: function() {
       MIDI.loader.stop(); 
       MIDI.programChange(0, 0); //[0,46]
