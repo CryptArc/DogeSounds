@@ -57,12 +57,14 @@ dogeChain.getData = function(){
     url:url,
     dataType: "json",
     success:function(data){
-      if (data.nethash_full ==null) {
-        data.nethash_full = _this.apiData.nethash_full
-      } else {
-        data.nethash_full = data.nethash_full.reverse()
+      if (typeof(data)=="object"){
+        if (data.nethash_full ==null) {
+          data.nethash_full = _this.apiData.nethash_full
+        } else {
+          data.nethash_full = data.nethash_full.reverse()
+        }
+        dogeChain.apiData = data
       }
-      dogeChain.apiData = data
     }
   });
 }
@@ -93,13 +95,8 @@ dogeChain.updateData = function(){
   
 }
 
-dogeChain.doHashRate = function(){
-  this.hashRateArray =$(this.hashRate.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
-  tempo = Math.log(3+this.difficulty)*(24 / Math.log(Math.log(3+this.difficulty)/Math.log(10))) ;
-  if (tempo < 90){
-    tempo = 90
-  }
-}
+
+
 dogeChain.doHashHistory = function(){
     data = this.apiData.nethash_full
     this.oldHashTime = Math.abs(parseInt(data[data.length-2][6]));

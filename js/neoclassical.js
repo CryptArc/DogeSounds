@@ -11,8 +11,14 @@ var masterVolume = 0.25;
 var scales = [[0,2,4,7,9,11],[2,5,7,9,12],[4,7,9,11,12,14],[4,0,-5,-1,2],[-3,-1,0,2,4,7],[-1,0,4,5,7]]
 var scale = scales[0];
 var themes = {};
-themes["minimal"] = function(i,t,c){
+themes["neoclassical"] = function(i,t,c){
   var note,note2,vol,sm;
+  if (c==7){
+    c=7
+  } else {
+    c=[0,1,2,3,4,8,12].wrapAt(c+dogeChain.blockCountArray.wrapAt(step));
+
+  }
   if (!isPlaying){
     return false;
   };
@@ -28,7 +34,12 @@ themes["minimal"] = function(i,t,c){
   sstep = 12 * parseFloat(dogeChain.hashRate/nh.wrapAt(sb)[dogeChain.hashPos])   
   sstep = Math.floor(sstep / parseFloat($(nh.wrapAt(Math.floor(step/Math.log(dogeChain.hashRate)))).last()[0]))
   sm = (7*(sstep)%12);
-  sm = sm + ((7*Math.ceil(Math.log(dogeChain.apiData.nethash_full.wrapAt(i+c)[5])%3))%12)
+  if (dogeChain.apiData.nethash_full.wrapAt(i+c)){
+    sm = sm + ((7*Math.ceil(Math.log(dogeChain.apiData.nethash_full.wrapAt(i+c)[5])%3))%12)
+  } else {
+    sm=0;
+  }
+  
   debug.sstep =sstep;
 
   octave =(c==7) ? 12 :  12+(12*(Math.floor(Math.pow(4,dh))%4)) + dogeChain.octaveOffset
@@ -39,10 +50,12 @@ themes["minimal"] = function(i,t,c){
 var out;
 var txr = (c+2).toString(3).split("").wrapAt(dogeChain.difficulty)
 var txp = (c+2).toString(3).split("").wrapAt(instep)
-var txh = [[1000,(4000/3)],[1000]].wrapAt(dogeChain.difficulty < 2000 ? 1: 0)
+var txh = [[0,(4000/3)],[0,1000]].wrapAt(dogeChain.difficulty < 2000 ? 0: dogeChain.blockCountArray.wrapAt(instep))
 var tra = dogeChain.difficulty < 2000 ? 0:1
 thx = c == 7 ? 2000  : txh
 var dc = Math.ceil(Math.log(dogeChain.difficulty/100) / Math.log(10)); 
+//tra = 0;
+//tx = 1;
 dc = dc < 1 ? 1 : dc
 //do this for tx volume / block reward of block, not log of diff
   for (tx = 0; tx < dc; tx++){
@@ -57,10 +70,8 @@ dc = dc < 1 ? 1 : dc
 
   }
 
-    out = MIDI.noteOn(c,note, vol, 0);
-    dogeChain.runningNote=  MIDI.noteOn(c,note2, vol, 0);
-
-
+  out = MIDI.noteOn(c,note, vol, 0);
+  dogeChain.runningNote=  MIDI.noteOn(c,note2, vol, 0);
   MIDI.noteOff(c,note,dur*tempo/1000);
   MIDI.noteOff(c,note2,dur*tempo/1000);
     
@@ -70,46 +81,70 @@ dc = dc < 1 ? 1 : dc
   }
   return out
 }
-themes["minimal_choir"] = function(i,t,c){
-  var octave = ((instep+c)%3)*12, note,note2,vol,sm;
+
+themes["choir"] = function(i,t,c){
+  var note,note2,vol,sm;
   if (!isPlaying){
     return false;
-  }
-  i=i + parseInt(dogeChain.scaleOffset)
+  };
+  i = i + parseInt(dogeChain.scaleOffset);
   var now = new Date().getTime();
   var sstep;
-  var sb = step / dogeChain.blockCountArray.sum()
-  sstep = 12 * parseFloat(dogeChain.hashRate/dogeChain.apiData.nethash_full.wrapAt(sb)[dogeChain.hashPos])   
-  sstep = Math.floor(sstep / parseFloat($(dogeChain.apiData.nethash_full.wrapAt(Math.floor(step/Math.log(dogeChain.hashRate)))).last()[0]))
-  var har = dogeChain.harmonize(c)
-  
-  sm = ([7,4,5,2].wrapAt(i)*(sstep))%12;
-  sm = sm + ((7*Math.ceil(Math.log(dogeChain.apiData.nethash_full.wrapAt(i+c)[5])%3))%12)
-  
-  octave = 12 *(((dogeChain.blockCount +c)%3)) + dogeChain.octaveOffset ;
-  note = octave + dogeChain.offset+octave+ sm +scale.wrapAt(i)+ t;
-  note2 = octave + dogeChain.offset+octave+ sm+scale.wrapAt(i)+ t + har;
-  vol = 16*Math.abs((128-i)/(note+24))* MIDI.channelVolumes[c] * masterVolume;
-  if (vol > 256) { vol = 256 } 
-
-  MIDI.noteOn(c,note, vol, 0);
-  MIDI.noteOn(c,note2, vol, 0);
-  MIDI.noteOff(c,note,((10-dogeChain.hashRateArray.wrapAt(c+sb)))*tempo/1000)
-  MIDI.noteOff(c,note2,((10-dogeChain.hashRateArray.wrapAt(c+sb)))*tempo/1000)
-
-  if (c < 6){
-    dogeChain.lastNote[c] = note;
+  var dur = dogeChain.hashRateArray.wrapAt(t+i) + 3;
+  var octave = 12 + ((12 * dogeChain.hashRateArray.sum())%3);
+  var sb = step / dogeChain.blockCountArray.sum();
+  var nh = dogeChain.apiData.nethash_full;
+  var dh = nh[0].wrapAt(c) / nh.wrapAt((step%nh[0].wrapAt(c).length)+sb).wrapAt(c);
+  sstep = 12 * parseFloat(dogeChain.hashRate/nh.wrapAt(sb)[dogeChain.hashPos])   
+  sstep = Math.floor(sstep / parseFloat($(nh.wrapAt(Math.floor(step/Math.log(dogeChain.hashRate)))).last()[0]))
+  sm = (7*(sstep)%12);
+  if (dogeChain.apiData.nethash_full.wrapAt(i+c)){
+    sm = sm + ((7*Math.ceil(Math.log(dogeChain.apiData.nethash_full.wrapAt(i+c)[5])%3))%12)
+  } else {
+    sm=0;
   }
+  octave= octave < 12 ? 12 : octave
+var out;
+note = octave+t+dogeChain.offset+(sm+(scale.wrapAt(i))%104);
+vol = 24*Math.abs((128-(i%127))/(note+12));
+vol = parseInt(vol* MIDI.channelVolumes[c] * masterVolume);
+if (vol > 256) { vol = 256 } 
+  out = MIDI.noteOn(c,note, vol, 0);
+  dogeChain.runningNote=  out;
+  return out
 }
-
 dogeChain.harmonize = function(c){
   h= (dogeChain.hashRate  > dogeChain.oldHashRate) ?  7 : 5
   return this.blockCount.toString(2).split("").wrapAt(c) * h
 }
 
 
+dogeChain.diffEMA = function(p) {
+  var diffs = [];
+  var d = this.apiData.difficulty;
+  $(this.apiData.nethash_full).each(function(i,e){
+    if (i <= p) {
+      diffs.push(parseInt(e[4]));
+    }
+  })
+  var dmax = Math.max.apply(Math,diffs);
+  var dmin = Math.max.apply(Math,diffs);
+  return (((dmax-((dmax-d)))/dmax) * ((d-dmin)/dmin))+1; 
+}
 
-var noteTheme  = themes["minimal"];
+
+dogeChain.doHashRate = function(){
+  var difflog = Math.abs(Math.log(this.difficulty));
+  this.hashRateArray =$(this.hashRate.toString().split("")).map(function(i,e){return parseInt(e)}).toArray();
+  tempo = difflog*(24 / Math.log(difflog/Math.log(10)));
+  tempo = tempo /(0.5+ this.diffEMA(this.blockCountArray.wrapAt(this.blockCount)%this.apiData.nethash_full.length))
+  
+  if (tempo < 90){
+    tempo = 90
+  }
+}
+
+var noteTheme  = themes["neoclassical"];
 
 var Step = function(){
   step++;
@@ -128,7 +163,6 @@ var Step = function(){
 }
 var ShuffleInstruments = function(insts){
   var iar = ia
-
   iar = iar.slice(0, 1+parseInt(dogeChain.blockCountArray.wrapAt(dogeChain.blockCount))%iar.length)
   MIDI.programChange(0, [iar.wrapAt(0),iar.wrapAt(1)][parseInt(insts[4])%2]); 
   MIDI.programChange(1, [iar.wrapAt(2),iar.wrapAt(0),iar.wrapAt(3)][parseInt(insts[3])]);
@@ -181,7 +215,6 @@ var TotalCoins = function(){
 
   noteTheme(parseInt(n1),24+dogeChain.moonDistance,0);
   noteTheme(parseInt(n2),24+dogeChain.moonDistance,1);
-
   NotesCallback("totalCoins",parseInt(n1));
 }
 
@@ -205,16 +238,7 @@ var BlockCount = function(){
   noteTheme(parseInt(Math.abs(tc)),24+dogeChain.moonDistance,4);
   NotesCallback("blockCount",parseInt(tc));
   var sb = Math.floor(step / bc.sum());
-  if ((step%(3+bc.wrapAt(instep)))==0||(step%(3+bc.wrapAt(instep)))==dogeChain.blockCountArray.wrapAt(instep)){
-    themes["minimal_choir"]((tcc[Math.ceil(step/(tl*tl))%tl]),12+dogeChain.moonDistance,5);
-    themes["minimal_choir"]((tcc[Math.ceil(step/(tl*tl))%tl]),12+dogeChain.moonDistance,9);
-    themes["minimal_choir"]((tcc[(instep+Math.ceil(step/(tl*tl)))%tl]),12+dogeChain.moonDistance,6);
-    themes["minimal_choir"]((tcc[(instep+Math.ceil(step/(tl*tl)))%tl]),12+dogeChain.moonDistance,10);
-    setTimeout(function(){themes["minimal_choir"]((tcc[Math.ceil(step/(tl*tl))%tl]),12+dogeChain.moonDistance,5)},tempo*Math.floor(tl*tl*0.5));
-    setTimeout(function(){themes["minimal_choir"]((tcc[Math.ceil(step/(tl*tl))%tl]),12+dogeChain.moonDistance,9)},tempo*Math.floor(tl*tl*0.5));
-    setTimeout(function(){themes["minimal_choir"]((tcc[(instep+Math.ceil(step/(tl*tl)))%tl]),12+dogeChain.moonDistance,6)},tempo*Math.floor(tl*tl*0.5))
-    setTimeout(function(){themes["minimal_choir"]((tcc[(instep+Math.ceil(step/(tl*tl)))%tl]),12+dogeChain.moonDistance,10)},tempo*Math.floor(tl*tl*0.5))
-  }
+ 
 }
 var NewBlock = function(){
   dogeChain.oldBlockCount = dogeChain.blockCount
@@ -243,9 +267,8 @@ var Notes = function(){
   var overUnder = (nh.wrapAt(0)[5] - nh.wrapAt(Math.floor(step/bls))[5]) >= 0;
     debug.overUnder = overUnder;
     debug.sh=sh;
-    //var pct = dogeChain.totalCoins/ Math.pow(10,Math.ceil(Math.log(dogeChain.totalCoins)/Math.log(10)));
     var pct = dogeChain.hashRate/ dogeChain.apiData.nethash_full.wrapAt(Math.floor(step/bls))[dogeChain.hashPos];
-    base = Math.floor(pct * 4);
+    base = Math.ceil(pct * 4);
   if (overUnder) {
     if (parseFloat(nh.wrapAt(step%dogeChain.totalCoinsArray.length)[4]) < parseFloat(nh.wrapAt((step+1)%dogeChain.totalCoinsArray.length)[4])){
       TotalCoins();
@@ -279,17 +302,19 @@ var Notes = function(){
     noteTheme(dogeChain.hashHistory.wrapAt(step),dogeChain.moonDistance,8)
   }
 
+  var chch = [5,6,9,10]
+  if (ins.wrapAt(step)>0){
+    themes["choir"](Math.ceil(Math.log(parseInt(dogeChain.apiData.nethash_full.wrapAt(0)[4])*12))%12,12+dogeChain.moonDistance,chch.wrapAt(Math.floor(step/base)))
+  }
+
+  
+
+  
   var ins = Number(step).toString(base).split("");
   var inz = ins.length*bls;
   debug.inz = inz
   if ((step%inz)==0){
     var bassy1 = noteTheme(0,dogeChain.moonDistance+12,7);
-    /*$(dogeChain.apiData.nethash_full.wrapAt(step/dogeChain.blockCountArray.sum())[2].split("")).each(function(i,e){
-      setTimeout(function(){noteTheme(parseInt(e),24+dogeChain.moonDistance,12)},tempo *(i*(1+dogeChain.blockCount.toString(4).split("").wrapAt(i)))/8);
-    })
-    $(dogeChain.apiData.nethash_full.wrapAt(step/dogeChain.blockCountArray.sum())[3].split("")).each(function(i,e){
-      setTimeout(function(){noteTheme(parseInt(e),24+dogeChain.moonDistance,13)},tempo *(i*(1+dogeChain.blockCount.toString(4).split("").wrapAt(i)))/8);
-    })*/
   }
   
   if (step%(inz*parseInt(dogeChain.totalCoins.toString().split("")[instep%4]))==0){
@@ -318,28 +343,29 @@ window.onload = function () {
       MIDI.programChange(7, 116);//[116]
       MIDI.programChange(8, 0);//[45,11]
       MIDI.programChange(12, 0);//[45,11]
-
       //first two always on, everything else * (dogeChain.blockCount%256).toString(2)
       MIDI.channelVolumes =  {0: 0.5, 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5, 5: 0.5, 6: 0.5, 7: 0.5, 8: 1, 9: 0.5, 10: 0.5,12:0.25,13:0.25}
       CheckStatsTimeout();
     }
   });  
 };
-var SwichOrc = function (){
-  ia = [26, 28, 113, 12, 8];
+var loadAll = function (){
+  
+  allLoaded = true;
+  ia = [26, 28, 113, 12, 8, 0];
   MIDI.loadPlugin({
-    instruments: ["electric_guitar_jazz","lead_2_sawtooth","agogo", "celesta","pad_5_bowed","marimba","electric_guitar_muted","pad_4_choir", "taiko_drum"],
+    instruments: ["electric_guitar_jazz","agogo", "celesta","choir_aahs","marimba","electric_guitar_muted","acoustic_grand_piano", "taiko_drum"],
     callback: function() {
-      MIDI.loader.stop(); 
+      MIDI.loader.stop();  
       MIDI.programChange(0, 12); //[0,46]
       MIDI.programChange(1, 45);//[52,46]
       MIDI.programChange(2, 11);//[46,45]
       MIDI.programChange(3, 14);//[46,52,11]
       MIDI.programChange(4, 4);//[46,11,0]
-      MIDI.programChange(5, 92);
-      MIDI.programChange(6, 91);
-      MIDI.programChange(9, 92);
-      MIDI.programChange(10, 91);
+      MIDI.programChange(5, 52);
+      MIDI.programChange(6, 52);
+      MIDI.programChange(9, 52);
+      MIDI.programChange(10, 52);
       MIDI.programChange(7, 116);//[116]
       MIDI.programChange(8, 31);//[45,
       MIDI.programChange(12, 31);//[45,
@@ -348,28 +374,3 @@ var SwichOrc = function (){
     })
 }
 
-
-var loadAll = function(){
-  allLoaded = true;
-  ia = [1,46,45,11,5];
-  MIDI.loadPlugin({
-    instruments: [ "acoustic_grand_piano ", "bright_acoustic_piano","violin","vibraphone","orchestral_harp", "taiko_drum","choir_aahs","pizzicato_strings","electric_piano_2"],
-    callback: function() {
-      MIDI.loader.stop(); 
-      MIDI.programChange(0, 0); //[0,46]
-      MIDI.programChange(1, 45);//[52,46]
-      MIDI.programChange(2, 11);//[46,45]
-      MIDI.programChange(3, 14);//[46,52,11]
-      MIDI.programChange(4, 4);//[46,11,0]
-      MIDI.programChange(5, 40);
-      MIDI.programChange(6, 52);
-      MIDI.programChange(9, 40);
-      MIDI.programChange(10, 52);
-      MIDI.programChange(7, 116);//[116]
-      MIDI.programChange(8, 45);//[45,
-      MIDI.programChange(12, 64);//[45,
-      MIDI.programChange(13, 64);//[45,
-
-    }
-    })
-};

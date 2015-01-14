@@ -76,7 +76,7 @@ if (isset($_GET["request"])){
     "ltc"=>"http://explorer.litecoin.net/chain/Litecoin/q/",
     "btc"=>"https://blockexplorer.com/q/",
     "xdq"=>"http://diracexplorer.org/chain/Dirac/q/",
-
+    "uro" => "http://uroexplorer.cryptocuttlefish.cc/chain/Urocoin/q/",
     "zet"=>"http://petroexplorer.info/chain/zetacoin/q/");
   $api_url = $apis[$chain];
   $req = $_GET["request"];

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>|||---||--|-|--||---|||</title>
+ <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+ <!-- midi.js package -->
+ <script src="./js/Color/SpaceW3.js" type="text/javascript"></script>
+ <script src="./js/MIDI/AudioDetect.js" type="text/javascript"></script>
+ <script src="./js/MIDI/LoadPlugin.js" type="text/javascript"></script>
+ <script src="./js/MIDI/Plugin.js" type="text/javascript"></script>
+ <script src="./js/MIDI/Player.js" type="text/javascript"></script>
+ <script src="./js/Widgets/Loader.js" type="text/javascript"></script>
+ <script src="./js/Window/Event.js" type="text/javascript"></script>
+ <script src="./js/Window/DOMLoader.XMLHttp.js" type="text/javascript"></script>
+ <script src="./js/Window/DOMLoader.script.js" type="text/javascript"></script>
+ <!-- extras -->
+ <script src="./inc/Base64.js" type="text/javascript"></script>
+ <script src="./inc/base64binary.js" type="text/javascript"></script>
+ <script src="./js/utils.js" type="text/javascript"></script>
+ <script src="./js/dogeChain.js" type="text/javascript"></script>
+ <script src="./js/neoclassical.js" type="text/javascript"></script>
+
+ <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+ <link href="./css/minimal.css" rel="stylesheet" type="text/css" />
+
+ <!-- font -->
+ <link href="http://fonts.googleapis.com/css?family=Andada" rel="stylesheet" type="text/css" />
+</head>
+<body>
+  <div id="content">
+    <div id="coinInfo">
+      <div class="coinData" id="coinName"></div>
+      <div class="coinData" id="difficulty"></div>
+      <div class="coinData" id="hashRate"></div>
+      <div class="coinData" id="totalCoins"></div>
+      <div class="coinData" id="currentBlock"></div>
+      <div class="coinData" id="blockSource"></div>
+      <div class="coinData" id="notesCallback"></div>
+    </div>
+    <div id="nethashTable">
+      <table border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <th>Block #</th>
+          <th>Diff</th>
+          <th>Hashrate</th>
+        </tr>
+        <tr class="nethashRow">
+          <td class="blockNum"></td>
+          <td class="diff"></td>
+          <td class="hashrate"></td>
+        </tr>
+      </table>
+    </div>
+ 
+    <div id="footer" class="toggleHide">
+        <div class="play toggleControl">&gt;</div>
+        <div class="pause toggleControl">||</div>
+        <div class="volDown">-</div>
+        <div class="vol"><div class="vu"></div></div>
+        <div class="volUp">+</div>
+      Audio created with <a href="https://github.com/mudx/MIDI.js">MIDI.js</a><br>
+    </div>
+  </div>
+
+
+<script type="text/javascript">
+
+var blockData = {
+  "bc":"http://blocks.blackcoin.pw/chain/BlackCoin/q/",
+  "doge":"http://dogechain.info/chain/Dogecoin/q/",
+  "drk":"http://explorer.darkcoin.io/chain/DarkCoin/q/",
+  "ptr":"http://petroexplorer.info/chain/petrodollar/q/",
+  "uno":"http://cryptexplorer.com/chain/Unobtanium/q/",
+  "pig":"http://piggycha.in/chain/Piggycoin/q/",
+  "zet":"http://petroexplorer.info/chain/zetacoin/q/",
+  "naut":"http://explorer.nautiluscoin.com/chain/Nautiluscoin/q/",
+  "vert":"http://cryptexplorer.com/chain/VertCoin/q/",
+  "dgb":"http://cryptexplorer.com/chain/DigiByte/q/",
+  "ltc":"http://explorer.litecoin.net/chain/Litecoin/q/",
+  "btc":"https://blockexplorer.com/q/",
+  "xdq":"http://diracexplorer.org:2750/chain/Dirac/q/",
+  "uro":"http://uroexplorer.cryptocuttlefish.cc/chain/Urocoin/q/"
+} 
+
+var donationAddrs = {
+  "bc":"http://blocks.blackcoin.pw/chain/BlackCoin/q/",
+  "doge":"http://dogechain.info/chain/Dogecoin/q/",
+  "drk":"http://explorer.darkcoin.io/chain/DarkCoin/q/",
+  "ptr":"http://petroexplorer.info/chain/petrodollar/q/",
+  "uno":"http://cryptexplorer.com/chain/Unobtanium/q/",
+  "pig":"http://piggycha.in/chain/Piggycoin/q/",
+  "zet":"http://petroexplorer.info/chain/zetacoin/q/",
+  "naut":"http://explorer.nautiluscoin.com/chain/Nautiluscoin/q/",
+  "xdq":"http://diracexplorer.org/chain/Dirac/q/"
+  
+} 
+
+var AnimateBars= function(){
+  var   tl2 =Math.log(dogeChain.totalCoins/ln2);
+  tl2 = Math.ceil(tl2*tl2);
+
+  $("#coinName").html("Coin: "+dogeChain.coin);
+  $("#difficulty").html("Difficulty: "+dogeChain.difficulty);
+  $("#hashRate").html("Netowork HashRate: "+dogeChain.hashRate);
+  $("#currentBlock").html("Current Block: "+dogeChain.blockCount);
+  $("#totalCoins").html("TotalCoins: "+dogeChain.totalCoins);
+  $("#blockSource").html("Block Data Source: "+blockData[dogeChain.coin]);
+  NotesCallback = function(n,i){
+//    $("#notesCallback").html(n+"|"+i)
+  }
+}
+
+colorMap = {
+  0:"#00ffff",
+  1:"#0033ff",
+  2:"#00ff99",
+  3:"#0066ff",
+  4:"#00ff00",
+  5:"#00ccff",
+  6:"#0000ff",
+  7:"#00ffcc",
+  8:"#0033ff",
+  9:"#00ff66",
+  10:"#0099ff",
+  11:"#00ff00"
+}
+dogeChain.dataCallback = function(){
+  AnimateBars()
+}
+$(document).ready(function(){
+  $(".play").click(function(){
+    isPlaying = true;
+    $(".play").addClass("active");
+    $(".pause").removeClass("active");
+  });
+  $(".pause").click(function(){
+    isPlaying = false;
+    $(".pause").addClass("active");
+    $(".play").removeClass("active");
+  });
+  $(".volUp").click(function(i,e){
+    masterVolume = masterVolume + 0.025;
+    if (masterVolume >1) {
+      masterVolume = 1;
+    }
+    $(".vu").css({width:(10*masterVolume).toString()+"px"})
+  });
+
+  $(".volDown").click(function(i,e){
+    masterVolume = masterVolume - 0.1;
+    if (masterVolume <0.1) {
+      masterVolume = 0.1;
+    }
+    $(".vu").css({width:(10*masterVolume).toString()+"px"})
+  });
+
+  $("#nav .item").each(function(i,e){
+    $(e).css({borderColor:colorMap[i+""]})
+  });
+  
+  $(".switchCoin").click(function(){
+    var coin = $(this).data("coin");
+    console.log(coin);
+    dogeChain.coin = coin;
+    dogeChain.interval=1;
+    dogeChain.getData();
+    dogeChain.updateData();
+    CheckStats();
+    NewBlock();
+  })
+  $(document).ready(function(){
+
+    dogeChain.coin="uro";
+    dogeChain.getData();
+    dogeChain.updateData();
+    CheckStats();
+    NewBlock();
+    ia = [12, 8, 0];
+
+  })
+});
+</script>
+
+</body>
+</html>
